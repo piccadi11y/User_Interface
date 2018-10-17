@@ -1,39 +1,45 @@
 #include "UserInterface.h"
 
-std::string UserInterface::GetInput_String(const std::vector<std::string> &MessageList, const bool &ToLower, const bool &InputPoint, const bool &DisplayNumbers, const bool &NewLineSplit) const {
+std::string UserInterface::GetInput_String(const std::string &Message, const bool &InputPoint, const int &MaxCharacters) const {return GetInput_String({Message}, 0, InputPoint, 0, 0, MaxCharacters);}
+
+std::string UserInterface::GetInput_String(const std::vector<std::string> &MessageList, const bool &OutputToLower, const bool &InputPoint, const bool &DisplayNumbers, const bool &NewLineSplit, const int &MaxCharacters) const {
 	Print_Array(MessageList, DisplayNumbers, false, NewLineSplit);
-	if (InputPoint) Print({">"}, 0, 0);
-	std::string input;
+	if (InputPoint) Print({">"}, 1, 0);
+	char InputBuffer[MaxCharacters];
+    std::string Input;
 	bool isValid{ true };
 	do {
 		if (!isValid) std::cout << "Please only use letters\n>";
 		isValid = true;
-		std::cin >> input;
-		for (unsigned int i{ 0 }; i < input.size(); i++) {
-			if (!(input.at(i) >= UI_CAPITAL_LETTER_MIN && input.at(i) <= UI_CAPITAL_LETTER_MAX) && !(input.at(i) >= UI_LOWER_LETTER_MIN && input.at(i) <= UI_LOWER_LETTER_MAX)) isValid = false;
+		std::cin.ignore(std::numeric_limits<int>::max(), '\n');
+		std::cin.getline(InputBuffer, sizeof(InputBuffer));
+        Input = std::string(InputBuffer);
+		for (unsigned int i{ 0 }; i < Input.size(); i++) {
+			if (!(Input.at(i) >= UI_CAPITAL_LETTER_MIN && Input.at(i) <= UI_CAPITAL_LETTER_MAX) && !(Input.at(i) >= UI_LOWER_LETTER_MIN && Input.at(i) <= UI_LOWER_LETTER_MAX)) isValid = false;
 		}
 	} while (!isValid);
-	if (ToLower) ConvertToLower(input);
-	return input;
+	if (OutputToLower) ConvertToLower(Input);
+	return Input;
 }
 
-int UserInterface::GetInput_Int(const std::vector<std::string> &MessageList, const int &Min, const int &Max, const bool &InputPoint, const bool &DisplayNumbers, const bool &HasTitle, const bool &NewLineSplit) const {
-	if (!DisplayNumbers) Print("Range: " + std::to_string(Min) + " - " + std::to_string(Max), 1, 1);
+int UserInterface::GetInput_Int(const std::string &Message, const bool &InputPoint, const int &Min, const int &Max, const bool &PrintRange) const {return GetInput_Int({Message}, Min, Max, InputPoint, 0, 0, 0, PrintRange);}
+
+int UserInterface::GetInput_Int(const std::vector<std::string> &MessageList, const int &Min, const int &Max, const bool &InputPoint, const bool &DisplayNumbers, const bool &HasTitle, const bool &NewLineSplit, const bool &PrintRange) const {
+	if (PrintRange) Print("Range: " + std::to_string(Min) + " - " + std::to_string(Max), 1, 1);
 	Print_Array(MessageList, DisplayNumbers, HasTitle, NewLineSplit);
-	if (InputPoint) Print(">", 0, 0);
 	int input;
-	bool inRange{ true };
-	do {
-		if (!inRange) Print("Please enter a number within the range.\n>", 0, 0);
-		while (!(std::cin >> input)) {
-			Print("Please only input numbers.\n>", 0, 0);
-			std::cin.clear();
-			std::cin.ignore(std::numeric_limits<int>::max());
-		}
-		inRange = false;
-		std::cin.ignore(std::numeric_limits<int>::max());
-	} while (!(input >= Min && input <= Max));
-	return input;
+	while (1) {
+	if (InputPoint) Print(">", 0, 0);
+        while (!(std::cin >> input)) {
+            Print("That is not a valid number.", 0, 1);
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<int>::max(), '\n');
+            if (InputPoint) Print(">", 0, 1);
+        }
+        if (input > 0 && input < 5) return input;
+        else Print(std::to_string(input) + " is out of range.", 0, 1);
+    }
+    return -1;
 }
 
 void UserInterface::Print(const std::string &Message, const unsigned int &LinesBefore, const unsigned int &LinesAfter) const {
