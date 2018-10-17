@@ -1,8 +1,8 @@
 #include "UserInterface.h"
 
-std::string UserInterface::getInput_str(const std::vector<std::string> messageList, const bool toLower, const bool DisplayInputPoint, const bool DisplayLineIncrements, const bool NewLineEachElement) const {
-	print_Array(messageList, DisplayLineIncrements, false, NewLineEachElement);
-	if (DisplayInputPoint) print({">"}, 0, 0);
+std::string UserInterface::GetInput_String(const std::vector<std::string> &MessageList, const bool &ToLower, const bool &InputPoint, const bool &DisplayNumbers, const bool &NewLineSplit) const {
+	Print_Array(MessageList, DisplayNumbers, false, NewLineSplit);
+	if (InputPoint) Print({">"}, 0, 0);
 	std::string input;
 	bool isValid{ true };
 	do {
@@ -10,84 +10,83 @@ std::string UserInterface::getInput_str(const std::vector<std::string> messageLi
 		isValid = true;
 		std::cin >> input;
 		for (unsigned int i{ 0 }; i < input.size(); i++) {
-			//std::cout << input.at(i) << std::endl;
 			if (!(input.at(i) >= UI_CAPITAL_LETTER_MIN && input.at(i) <= UI_CAPITAL_LETTER_MAX) && !(input.at(i) >= UI_LOWER_LETTER_MIN && input.at(i) <= UI_LOWER_LETTER_MAX)) isValid = false;
 		}
 	} while (!isValid);
-	if (toLower) ConvertToLower(input);
+	if (ToLower) ConvertToLower(input);
 	return input;
 }
 
-int UserInterface::getInput_int(const std::vector<std::string> messageList, const int minimum, const int maximum, const bool DisplayInputPoint, const bool DisplayLineIncrements, const bool IncludesTitle, const bool NewLineEachElement) const {
-	if (!DisplayLineIncrements) print("Range: " + std::to_string(minimum) + " - " + std::to_string(maximum), 1, 1);
-	print_Array(messageList, DisplayLineIncrements, IncludesTitle, NewLineEachElement);
-	if (DisplayInputPoint) print(">", 0, 0);
+int UserInterface::GetInput_Int(const std::vector<std::string> &MessageList, const int &Min, const int &Max, const bool &InputPoint, const bool &DisplayNumbers, const bool &HasTitle, const bool &NewLineSplit) const {
+	if (!DisplayNumbers) Print("Range: " + std::to_string(Min) + " - " + std::to_string(Max), 1, 1);
+	Print_Array(MessageList, DisplayNumbers, HasTitle, NewLineSplit);
+	if (InputPoint) Print(">", 0, 0);
 	int input;
 	bool inRange{ true };
 	do {
-		if (!inRange) print("Please enter a number within the range.\n>", 0, 0);
+		if (!inRange) Print("Please enter a number within the range.\n>", 0, 0);
 		while (!(std::cin >> input)) {
-			print("Please only input numbers.\n>", 0, 0);
+			Print("Please only input numbers.\n>", 0, 0);
 			std::cin.clear();
-			std::cin.ignore(1000000, '\n');
+			std::cin.ignore(std::numeric_limits<int>::max());
 		}
 		inRange = false;
-		std::cin.ignore(1000000, '\n');
-	} while (!(input >= minimum && input <= maximum));
+		std::cin.ignore(std::numeric_limits<int>::max());
+	} while (!(input >= Min && input <= Max));
 	return input;
 }
 
-void UserInterface::print(const std::string message, const unsigned int newLineCount_before, const unsigned int newLineCount_after) const {
-	for (unsigned int i{ 0 }; i < newLineCount_before; i++) {
+void UserInterface::Print(const std::string &Message, const unsigned int &LinesBefore, const unsigned int &LinesAfter) const {
+	for (unsigned int i{ 0 }; i < LinesBefore; i++) {
 		std::cout << std::endl;
 	}
-    std::cout << message;
-	for (unsigned int i{ 0 }; i < newLineCount_after; i++) {
+    std::cout << Message;
+	for (unsigned int i{ 0 }; i < LinesAfter; i++) {
 		std::cout << std::endl;
 	}
 }
 
-void UserInterface::print(const char character, const unsigned int newLineCount_before, const unsigned int newLineCount_after) const {
-    print(std::string(1, character), newLineCount_before, newLineCount_after);
+void UserInterface::Print(const char &Character, const unsigned int &LinesBefore, const unsigned int &LinesAfter) const {
+    Print(std::string(1, Character), LinesBefore, LinesAfter);
 }
 
-void UserInterface::print_Array(const std::vector<std::string> messageList, const bool printNumbers, const bool IncludesTitle, const bool NewLineEachElement) const {
+void UserInterface::Print_Array(const std::vector<std::string> &MessageList, const bool &DisplayNumbers, const bool &HasTitle, const bool &NewLineSplit) const {
 	int i{ 1 };
-	bool Title {IncludesTitle};
-	for (const std::string &element : messageList) {
-        if (printNumbers && element != "") {
-            if (!Title) std::cout << i++ << ") ";
-            print(element, 0, 1);
+	bool PrintTitle {HasTitle};
+	for (const std::string &element : MessageList) {
+        if (DisplayNumbers && element != "") {
+            if (!PrintTitle) std::cout << i++ << ") ";
+            Print(element, 0, 1);
         }
-		else if (element!= "") print(element, 0, NewLineEachElement);
-		Title = false;
+		else if (element!= "") Print(element, 0, NewLineSplit);
+        PrintTitle = false;
 	}
 }
 
-void UserInterface::print_Name(const std::vector<std::string> NameComponents) {
+void UserInterface::Print_Name(const std::vector<std::string> &NameComponents) const {
     for (std::string element : NameComponents) {
         ConvertToUpper(element, {0});
-        print(element + " ", 0, 0);
+        Print(element + " ", 0, 0);
     }
 }
 
-void UserInterface::print_NewLines(const unsigned int NewLineCount) const {
-    print("", 0, NewLineCount);
+void UserInterface::Print_NewLines(const unsigned int &Count) const {
+    Print("", 0, Count);
 }
 
-void UserInterface::print_Bool(const bool value) const {
-    std::cout << std::boolalpha << value << std::noboolalpha;
+void UserInterface::Print_Bool(const bool &Value) const {
+    std::cout << std::boolalpha << Value << std::noboolalpha;
 }
 
-bool UserInterface::checkInputForCommands(const std::vector<std::string> input, std::vector<std::string> checklist, unsigned int &numberFound, std::vector<int> &locationsFound) const {
+bool UserInterface::CheckInputForCommands(const std::vector<std::string> Input, const std::vector<std::string> Checklist, unsigned int &NumberFound, std::vector<int> &LocationsFound) const {
 	bool found{false};
 	unsigned int nFound{ 0 };
 	std::vector<int> locFound(UI_COMMANDS_MAX);
 	unsigned int locFound_itteration{ 0 };
 
-	for (unsigned int x{ 0 }; x < input.size(); x++) {                                  // need to completely rework this code
-		for (unsigned int i{ 0 }; i < checklist.size(); i++) {                          // take the max number of words necessary in any command and search/commpare with those
-			if (input.at(x) == checklist.at(i)) {
+	for (unsigned int x{ 0 }; x < Input.size(); x++) {                                  // need to completely rework this code
+		for (unsigned int i{ 0 }; i < Checklist.size(); i++) {                          // take the max number of words necessary in any command and search/commpare with those
+			if (Input.at(x) == Checklist.at(i)) {
 				found = true;
 				nFound++;
 				if (locFound_itteration < UI_COMMANDS_MAX) {	// pretty sure this logic is good**
@@ -101,8 +100,8 @@ bool UserInterface::checkInputForCommands(const std::vector<std::string> input, 
 std::cout << "nFound = " << nFound << "\nlocFound = " << locFound[0] << std::endl;
 #endif // _DEBUG
 
-	numberFound = nFound;
-	locationsFound = locFound;
+	NumberFound = nFound;
+	LocationsFound = locFound;
 
 	return found;
 }
