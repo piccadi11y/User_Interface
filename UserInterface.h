@@ -9,18 +9,20 @@
 #define UI_CAPITAL_LETTER_MAX 90
 #define UI_LOWER_LETTER_MIN 97
 #define UI_LOWER_LETTER_MAX 122
+#define UI_WHITESPACE 32
 #define UI_COMMANDS_MAX 1
 
 class UserInterface {
 private:
-	void ConvertToUpper(std::string &String) const;                                         // potentially make public
-	void ConvertToUpper(std::string &String, const std::vector<int>ToSwitch) const;         // potentially make public
-	void ConvertToLower(std::string &String) const;                                         // potentially make public
-	void ConvertToLower(std::string &String, const std::vector<int>ToSwitch) const;         // potentially make public
 	void GetUpper(char &Char) const;
 	void GetLower(char &Char) const;
 
 public:
+	void ConvertToUpper(std::string &String) const;
+	void ConvertToUpper(std::string &String, const std::vector<int>ToSwitch) const;
+	void ConvertToLower(std::string &String) const;
+	void ConvertToLower(std::string &String, const std::vector<int>ToSwitch) const;
+
     //~UserInterface() {print("Destroyed", 0);}     for testing purposes
     std::string GetInput_String(const std::string &Message, const bool &InputPoint, const int &MaxCharacters) const;
 	std::string GetInput_String(const std::vector<std::string> &MessageList, const bool &OutputToLower, const bool &InputPoint, const bool &DisplayNumbers, const bool &NewLineSplit, const int &MaxCharacters) const;

@@ -15,7 +15,7 @@ std::string UserInterface::GetInput_String(const std::vector<std::string> &Messa
 		std::cin.getline(InputBuffer, sizeof(InputBuffer));
         Input = std::string(InputBuffer);
 		for (unsigned int i{ 0 }; i < Input.size(); i++) {
-			if (!(Input.at(i) >= UI_CAPITAL_LETTER_MIN && Input.at(i) <= UI_CAPITAL_LETTER_MAX) && !(Input.at(i) >= UI_LOWER_LETTER_MIN && Input.at(i) <= UI_LOWER_LETTER_MAX)) isValid = false;
+			if (!(Input.at(i) >= UI_CAPITAL_LETTER_MIN && Input.at(i) <= UI_CAPITAL_LETTER_MAX) && !(Input.at(i) >= UI_LOWER_LETTER_MIN && Input.at(i) <= UI_LOWER_LETTER_MAX) && !(Input.at(i) == UI_WHITESPACE)) isValid = false;
 		}
 	} while (!isValid);
 	if (OutputToLower) ConvertToLower(Input);
@@ -36,7 +36,7 @@ int UserInterface::GetInput_Int(const std::vector<std::string> &MessageList, con
             std::cin.ignore(std::numeric_limits<int>::max(), '\n');
             if (InputPoint) Print(">", 0, 1);
         }
-        if (input > 0 && input < 5) return input;
+        if (input >= Min && input <= Max) return input;
         else Print(std::to_string(input) + " is out of range.", 0, 1);
     }
     return -1;
@@ -140,7 +140,7 @@ void UserInterface::GetUpper(char &Char) const {
 	if (Char >= UI_LOWER_LETTER_MIN && Char <= UI_LOWER_LETTER_MAX) {
 		Char -= 32;
 	}
-	else {
+	else if (Char != UI_WHITESPACE) {
 		if (!(Char >= UI_CAPITAL_LETTER_MIN && Char <= UI_CAPITAL_LETTER_MAX)) {
 			throw "This character is not a letter.";
 		}
@@ -151,7 +151,7 @@ void UserInterface::GetLower(char &Char) const {
 	if (Char >= UI_CAPITAL_LETTER_MIN && Char <= UI_CAPITAL_LETTER_MAX) {
 		Char += 32;
 	}
-	else {
+	else if (Char != UI_WHITESPACE) {
 		if (!(Char >= UI_LOWER_LETTER_MIN && Char <= UI_LOWER_LETTER_MAX)) {
 			throw "This character is not a letter.";
 		}
